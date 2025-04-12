@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Details - BuyWave</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F5F3EE;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #0056B3;
+            overflow: hidden;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .navbar a {
+            color: white;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+        .container {
+            text-align: center;
+            padding: 50px;
+        }
+        .stock-info {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            text-align: left;
+        }
+        .positive { color: green; }
+        .negative { color: red; }
+        .chart-container {
+            width: 80%;
+            margin: auto;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="index.html">Home</a>
+    </div>
+    
+    <div class="container">
+        <h1 id="stockTitle"></h1>
+        <div class="stock-info">
+            <h2>Stock Price: <span id="stockPrice"></span></h2>
+            <p>Change: <span id="stockChange"></span></p>
+            <p>Trading Volume: <span id="stockVolume"></span></p>
+            <p>52-Week High: <span id="stockHigh"></span></p>
+            <p>52-Week Low: <span id="stockLow"></span></p>
+            <p>Market Cap: <span id="marketCap"></span></p>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="stockChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const symbol = params.get("symbol");
+        const apiKey = "I1ZPGZT3TBFALW8H";
+
+        async function fetchStockData(symbol) {
+            const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${apiKey}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            return data["Global Quote"];
+        }
+
+        async function fetchHistoricalData(symbol) {
+            const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${apiKey}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            return data["Time Series (Daily)"];
+        }
+
+        async function displayStockInfo() {
+            if (!symbol) {
+                document.querySelector(".container").innerHTML = "<h2>No stock symbol provided.</h2>";
+                return;
+            }
+
+            document.getElementById("stockTitle").innerText = `Stock Details - ${symbol}`;
+
+            try {
+                const stockData = await fetchStockData(symbol);
+                document.getElementById("stockPrice").innerText = `$${parseFloat(stockData["05. price"]).toFixed(2)}`;
+                document.getElementById("stockChange").innerText = `${parseFloat(stockData["09. change"]).toFixed(2)} (${parseFloat(stockData["10. change percent"]).toFixed(2)}%)`;
+                document.getElementById("stockChange").className = parseFloat(stockData["09. change"]) >= 0 ? "positive" : "negative";
+                document.getElementById("stockVolume").innerText = stockData["06. volume"];
+                document.getElementById("stockHigh").innerText = `$${parseFloat(stockData["03. high"]).toFixed(2)}`;
+                document.getElementById("stockLow").innerText = `$${parseFloat(stockData["04. low"]).toFixed(2)}`;
+                document.getElementById("marketCap").innerText = "Unavailable from API";
+            } catch (error) {
+                document.querySelector(".stock-info").innerHTML = "<h2>Data not available</h2>";
+            }
+
+            try {
+                const historicalData = await fetchHistoricalData(symbol);
+                const dates = Object.keys(historicalData).slice(0, 30).reverse();
+                const prices = dates.map(date => parseFloat(historicalData[date]["4. close"]));
+
+                const ctx = document.getElementById("stockChart").getContext("2d");
+                new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: "Stock Price",
+                            data: prices,
+                            borderColor: "#0056B3",
+                            fill: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { display: true },
+                            y: { display: true }
+                        }
+                    }
+                });
+            } catch (error) {
+                document.querySelector(".chart-container").innerHTML = "<h2>Chart data not available</h2>";
+            }
+        }
+
+        displayStockInfo();
+    </script>
+</body>
+</html>
