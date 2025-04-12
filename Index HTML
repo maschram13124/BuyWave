@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuyWave - Stock Lookup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F5F3EE;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #0056B3;
+            overflow: hidden;
+            padding: 10px 20px;
+        }
+        .navbar a {
+            float: left;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+        .navbar a:hover {
+            background-color: #003F80;
+            border-radius: 5px;
+        }
+        .container {
+            text-align: center;
+            padding: 50px;
+        }
+        h1, h2 {
+            color: #0056B3;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        input {
+            width: 250px;
+            border: 2px solid #007BFF;
+        }
+        button {
+            margin-left: 10px;
+            cursor: pointer;
+            background-color: #0056B3;
+            color: white;
+            border: none;
+        }
+        button:hover {
+            background-color: #003F80;
+        }
+        .logo {
+            width: 200px;
+            margin-bottom: 20px;
+        }
+        .stock-list {
+            margin-top: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .stock-card {
+            background-color: #fff;
+            border: 2px solid #ccc;
+            padding: 15px;
+            width: 200px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .positive {
+            color: green;
+        }
+        .negative {
+            color: red;
+        }
+        .strategy-section {
+            background-color: #ffffff;
+            padding: 40px;
+            margin-top: 50px;
+            border-top: 3px solid #0056B3;
+            text-align: center;
+        }
+        .strategy-list {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        .strategy-list li {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .strategy-list li i {
+            margin-right: 10px;
+            font-size: 22px;
+            vertical-align: middle;
+        }
+        .strategy-section h2 {
+            color: #003F80;
+        }
+        .strategy-section ul {
+            padding: 0;
+        }
+        .strategy-list > li {
+            padding: 12px;
+            background-color: #f7f7f7;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 12px;
+        }
+        .strategy-list > li:hover {
+            background-color: #e0e7ff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="#">Services</a>
+        <a href="#">Help</a>
+    </div>
+    <div class="container">
+        <img src="BuyWave edit.jpg" alt="BuyWave Logo" class="logo">
+        <h1>Enter Company Name</h1>
+        <input type="text" id="stockSymbol" placeholder="Enter stock symbol...">
+        <button onclick="searchStock()">Submit</button>
+        <div class="stock-list" id="stockList">
+            <h2>Top Stocks</h2>
+            <div>Loading...</div>
+        </div>
+    </div>
+    <div class="strategy-section">
+        <h2>Our Strategy</h2>
+        <ul class="strategy-list">
+            <li><i class="fas fa-chart-line"></i> <strong>Price Momentum:</strong>
+                <ul>
+                    <li>📈 Relative Strength Index (RSI): Measures stock price momentum over time.</li>
+                    <li>📊 Moving Averages (50-day, 200-day): Short-term vs. long-term price trends.</li>
+                    <li>🔄 Rate of Change (ROC): Measures the percentage change in stock price over a defined period.</li>
+                </ul>
+            </li>
+            <li><i class="fas fa-cogs"></i> <strong>Fundamental Factors:</strong>
+                <ul>
+                    <li>💵 Earnings per Share (EPS): A strong indicator of profitability.</li>
+                    <li>📊 Revenue Growth: Indicates a company’s ability to expand.</li>
+                    <li>🔢 Price-to-Earnings (P/E) Ratio: Helps assess stock price relative to earnings.</li>
+                    <li>🏅 Return on Equity (ROE): Measures the profitability of a company’s equity.</li>
+                </ul>
+            </li>
+            <li><i class="fas fa-balance-scale"></i> <strong>Valuation Factors:</strong>
+                <ul>
+                    <li>📚 Price-to-Book (P/B) Ratio: Compares the market value to the book value.</li>
+                    <li>💰 Free Cash Flow (FCF): Indicates financial flexibility and health.</li>
+                    <li>📈 Dividend Yield: Can signal stability in a company's cash flow.</li>
+                </ul>
+            </li>
+            <li><i class="fas fa-exclamation-triangle"></i> <strong>Risk/Volatility Measures:</strong>
+                <ul>
+                    <li>⚡ Beta: Measures stock volatility relative to the market.</li>
+                    <li>📉 Standard Deviation of Returns (Volatility): Direct measure of risk.</li>
+                    <li>📊 Value-at-Risk (VaR): Estimates potential losses in a stock.</li>
+                </ul>
+            </li>
+            <li><i class="fas fa-comment-dots"></i> <strong>Market Sentiment:</strong>
+                <ul>
+                    <li>🔍 Analyst Ratings (Consensus Rating): Provides a gauge of market sentiment.</li>
+                    <li>📉 Short Interest Ratio: Reflects bearish sentiment about a stock.</li>
+                    <li>💬 Social Media Sentiment (if applicable): Can be an alternative sentiment indicator.</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script>
+        const topStocks = ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "NVDA", "META", "BRK.B", "JPM", "UNH"];
+        const apiKey = "I1ZPGZT3TBFALW8H"; 
+        const stockList = document.getElementById("stockList");
+
+        async function fetchStockData(symbol) {
+            const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${apiKey}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            return data["Global Quote"];
+        }
+
+        async function displayTopStocks() {
+            stockList.innerHTML = "<h2>Top Stocks</h2>";
+            for (const symbol of topStocks) {
+                try {
+                    const stockData = await fetchStockData(symbol);
+                    const price = parseFloat(stockData["05. price"]).toFixed(2);
+                    const change = parseFloat(stockData["09. change"]).toFixed(2);
+                    const changeClass = change >= 0 ? "positive" : "negative";
+                    stockList.innerHTML += `
+                        <div class="stock-card">
+                            <h3>${symbol}</h3>
+                            <p>Price: $${price}</p>
+                            <p class="${changeClass}">Change: ${change}</p>
+                        </div>`;
+                } catch (error) {
+                    stockList.innerHTML += `
+                        <div class="stock-card">
+                            <h3>${symbol}</h3>
+                            <p>Data not available</p>
+                        </div>`;
+                }
+            }
+        }
+
+        function searchStock() {
+    let symbol = document.getElementById("stockSymbol").value.toUpperCase();
+    if (symbol) {
+        window.location.href = `stock.html?symbol=${symbol}`;
+    } else {
+        alert("Please enter a stock symbol.");
+    }
+}
+
+
+        displayTopStocks();
+    </script>
+</body>
+</html>
+
+
+
